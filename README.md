@@ -23,7 +23,7 @@ https://geekland.eu/aprender-markdown-en-minutos/
 
 #### FÓRMULAS y TRUCOS
 
-* 👹<span style="color:gold">**2^n - 2**</span>👹 >= X Subredes
+* 👹<span style="color:gold">**2^n**</span>👹 >= X Subredes
 
 * 👹<span style="color:gold">**2^m - 2**</span>👹 >= X Hosts
 
@@ -160,7 +160,7 @@ https://geekland.eu/aprender-markdown-en-minutos/
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | 0 | .128 | .192 | .224 | .240 | .248 | .252 | .254 | .255 |
 
-* 👹<span style="color:gold">**2^n - 2**</span>👹 >= X Subredes (Para Subnetting Fijo)
+* 👹<span style="color:gold">**2^n**</span>👹 >= X Subredes (Para Subnetting Fijo)
 
 * 👹<span style="color:gold">**2^m - 2**</span>👹 >= X Hosts (Para VLSM primero)
 
@@ -250,7 +250,7 @@ https://geekland.eu/aprender-markdown-en-minutos/
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | 0 | .128 | .192 | .224 | .240 | .248 | .252 | .254 | .255 |
 
-* 👹<span style="color:gold">**2^n - 2**</span>👹 >= X Subredes (Para Subnetting Fijo)
+* 👹<span style="color:gold">**2^n**</span>👹 >= X Subredes (Para Subnetting Fijo)
 
 * 👹<span style="color:gold">**2^m - 2**</span>👹 >= X Hosts (Para VLSM primero)
 
