@@ -1,0 +1,78 @@
+192.168.40.0/24
+
+Tecnologia: 10 Hosts
+Administración: 40 hosts
+Vendes: 100 hosts
+Compra: 22 hosts
+Recursos humans: 5 hosts
+
+TABLA
+
+---------
+
+RED
+
+N HOST
+
+MX
+
+AX (Dirección de Red)
+
+AB (Parte de HOST)
+
+Decimal (AB)
+
+
+
+1. Ordenación
+
+	Vendes 100 hosts
+	
+	Administracion 40 hosts
+	
+	Compra 22 hosts
+	
+	Tecnologia 10 hosts
+	
+	Recursos Humans 5 hosts
+	
+	
+2. Usar la fórmula para saber cuantos hosts.
+
+	(2^n - 2)
+	
+	VENDES
+	
+	A 100 hosts se le puede asignar 128 (126 hosts disponibles) que es 2^7-2
+	
+	2^7 - 2 = 126
+	
+	El resultado lo restamos a 32. --> 32 - 7 = 25. 
+	
+	MX = /25
+	
+	Para saber el próximo salto, se resta 256 con la máscara. 256-128 = 128, 
+	
+	El próximo salto es 128
+	
+	
+	ADMINISTRACION
+	
+	40 hosts --> 2^6-2 = 62 hosts para esta subred.
+	
+		32 - 6 = 26
+		
+	MX = /26
+	
+	Para saber el próximo salto, se resta 256 con la máscara nueva. 256-192 - 64.
+	
+	---
+	
+	Sumamos la dirección de RED nuestra y el SALTO. --> 192.168.40.128+64 = 192
+	
+	
+	
+	
+	
+	
+	
