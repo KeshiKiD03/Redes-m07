@@ -1,0 +1,261 @@
+MAC - Media Access Control - Dirección física asignada en los NIC (Tarjetas de red) - Los asigna el fabricante, es único. Es utilizado por el protocolo Ethernet.
+
+ARP - Address Resolution Protocol - Trabaja con MAC - IP. Se encarga de averiguar las MAC con sus respectivas IP. Tiene tabla ARP (cache).
+
+Dominio de colisión:
+
+	Uso de HUB - Amplifica la señal. Si varios dispositivos quieren usar enviar paquetes, se producirá una colisión.
+	
+		Deprecated.
+		
+		Conexión entre dispositivos.
+
+Dominio de difusión - broadcast
+
+	Uso de SWITCH: Segmenta el dominio de colisiones. 
+	
+		Permite crear VLANS.
+		
+		Conexión todos los dispositivos.
+	
+----
+
+Switch vs HUB
+
+	Switch: 
+	
+		Funciona en la capa de DATOS (Capa 2 OSI).
+		
+		Segmenta dominios de colisión.	
+		
+		Mantiene un registro de las direcciones MAC de todos los dispositivos conectados.
+		
+		No comparte el ancho de banda.
+		
+	Hub:
+	
+		Cuando un paquete llega a un puerto, se copia a otros puertos para que todos los segmentos de la LAN puedan ver todos los paquetes.
+		
+		Sólamente se puede enviar 1 a la vez.
+		
+		Provoca colisiones.
+		
+		Genera mucho tráfico en la red.
+		
+		Comparte el ancho de banda.
+		
+		
+		
+----------------------------------------------------------
+          |
+COMANDOS  |
+          |
+-----------
+
+SWITCH - show mac-address-table -- Muestra tablas de arp en los switch
+
+1. Cerrar puertos que no vayamos a utilizar (OPCIONAL)
+
+enable
+
+configure terminal
+
+int range fa0/1-2
+
+int fa0/5
+
+int range fa0/8-19
+
+shutdown
+
+# Sólamente usaremos las que vayamos a necesitar el resto las apagamos
+
+# Las del enlace las dejamos abiertas.
+
+# Normalmente ya vienen apagadas. Ya que hemos puesto donde queremos que se abra el puerto.
+
+------
+
+2. Asignación de VLAN
+
+- Crear VLAN
+
+# 2 métodos / Crearla a priori con vlan 10 - name Administracio o lo crea automático con switchport mode access - switchport access vlan 10
+
+1. VLAN 10
+
+- vlan 10
+
+- name direccio
+
+- exit
+
+	- int range fa0/3-5
+	
+	- switchport mode access
+	
+	- switchport access vlan 10
+	
+	- exit
+	
+- exit
+
+- show vlan
+
+2. VLAN 50
+
+- vlan 50
+
+- name dissenyadors
+
+- exit
+
+	- int range fa0/6-19
+	
+	- switchport mode access
+	
+	- switchport access vlan 50
+	
+	- exit
+	
+- exit
+
+- show vlan
+	
+	
+
+Switch#show vlan
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    
+10   direccio                         active    Fa0/3, Fa0/4, Fa0/5
+50   dissenyadors                     active    Fa0/6, Fa0/7, Fa0/8, Fa0/9
+                                                Fa0/10, Fa0/11, Fa0/12, Fa0/13
+                                                Fa0/14, Fa0/15, Fa0/16, Fa0/17
+ 
+
+
+3. VLAN 60
+
+- vlan 60
+
+- name comercials
+
+- exit
+
+	- int range fa0/20-24
+	
+	- switchport mode access
+	
+	- switchport access vlan 60
+	
+	- exit
+	
+- exit
+
+- show vlan
+
+(REPETIR MISMO PROCESO EN EL OTRO SWITCH)
+
+----------
+
+ASIGNAR LAS IP MANUALMENTE EN LOS ORDENADORES Y PROBAR PING
+
+--------
+
+MODO TRUNK
+
+- Eliminar las INTERFICIES
+
+1. No shutdown de fa0/1 de ambas
+
+
+Switch(config)#interface fastEthernet 0/1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up
+
+
+Switch(config-if)#switchport trunk allowed vlan 10,50,60
+
+exit
+
+
+# PROBAR EN LOS 2 SWITCHES
+
+----
+
+ENLAZAR VLAN NATIVA
+
+Switch(config-if)#switchport trunk native vlan 1
+
+---------
+
+
+PROBAR PING
+
+
+
+----------------------------------------------------------
+          		|
+1.2 ENRUTAMIENTO VLAN  |
+          		|
+-------------------------
+
+ACCESS
+
+1. Poner las VLAN com siempre en modo ACCESS.
+
+- int range fa0/1-12
+
+- switchport mode access
+
+- switchport access vlan 10
+
+- int range fa0/13-24
+
+- switchport mode access
+
+- switchport access vlan 20
+
+2. Apagar los puertos que no vamos a utilizar excepto las del ENLACE DE LA VLAN Y EL PUERTO QUE CONECTA EL DISPOSITIVO.
+
+3. Configurar el router
+
+Router(config)#int fa0/0
+Router(config-if)#ip address 172.16.10.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config)#int fa0/1
+Router(config-if)#ip address 172.16.20.1 255.255.255.0
+Router(config-if)#no shutdown
+
+4. Probar PING.
+
+
+----
+
+TRUNC
+
+1. Cambiar el cable a 1 solo fa0/0. Modificar el ROUTER.
+
+VLAN 10
+Router(config)#int fa0/0.10
+Router(config-subif)#encapsulation dot1Q 10
+Router(config-subif)#ip address 172.16.10.1 255.255.255.0
+Router(config-subif)#exit
+VLAN 20
+Router(config)#int fa0/0.20
+Router(config-subif)#encapsulation dot1Q 20
+Router(config-subif)#ip address 172.16.20.1 255.255.255.0
+Router(config-subif)#exit
+
+2. Modificar el SWITCH.
+
+Switch(config)#int fa0/1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 10,20
+Switch(config-if)#no shutdown
+Switch(config-if)#exit
