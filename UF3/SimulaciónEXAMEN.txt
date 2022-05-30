@@ -1,0 +1,184 @@
+# 2.2 ENRUTAMENT COMPLEX
+
+1. Fijarse muy bien en la tabla.
+
+2. Agrupar las VLAN y mirar su interfície.
+
+3. Observar el rango.
+
+SWITCH 1
+
+switch>enable
+Switch#conf
+Switch#configure ter
+Switch#configure terminal 
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+# VLAN 50
+
+Switch(config)#vlan 50
+Switch(config-vlan)#name v50
+Switch(config-vlan)#exit
+
+Switch(config)#int range fa0/4-10
+Switch(config-if-range)#switchport mode access
+Switch(config-if-range)#switchport access vlan 50
+Switch(config-if-range)#no shutdown
+Switch(config-if-range)#exit
+
+# VLAN 60
+
+Switch(config)#vlan 60
+Switch(config-vlan)#name v60
+Switch(config-vlan)#exit
+Switch(config)#int range fa0/11-24
+
+
+Switch(config-if-range)#switchport mode access 
+Switch(config-if-range)#switchport access vlan 60
+Switch(config-if-range)#no shutdown
+Switch(config-if-range)#exit
+
+
+# VLAN 100
+
+Switch(config)#vlan 100
+Switch(config-vlan)#name v100
+Switch(config-vlan)#exit
+
+
+Switch(config)#interface fastEthernet 0/3
+Switch(config-if)#switchport mode access
+Switch(config-if)#switch access vlan 100
+Switch(config-if)#exit
+Switch(config)#exit
+Switch#
+%SYS-5-CONFIG_I: Configured from console by console
+
+Switch#show vlan
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1, Fa0/2
+50   v50                              active    Fa0/4, Fa0/5, Fa0/6, Fa0/7
+                                                Fa0/8, Fa0/9, Fa0/10
+60   v60                              active    Fa0/11, Fa0/12, Fa0/13, Fa0/14
+                                                Fa0/15, Fa0/16, Fa0/17, Fa0/18
+                                                Fa0/19, Fa0/20, Fa0/21, Fa0/22
+                                                Fa0/23, Fa0/24
+100  v100                             active    Fa0/3
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active    
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1    enet  100001     1500  -      -      -        -    -        0      0
+50   enet  100050     1500  -      -      -        -    -        0      0
+60   enet  100060     1500  -      -      -        -    -        0      0
+100  enet  100100     1500  -      -      -        -    -        0      0
+
+
+# TRUNK MODE
+
+Switch#
+Switch#conf
+Switch#configure ter
+Switch#configure terminal 
+Enter configuration commands, one per line.  End with CNTL/Z.
+
+# FA0/1
+
+Switch(config)#int
+Switch(config)#interface fa
+Switch(config)#interface fastEthernet 0/1
+
+
+Switch(config-if)#switchport mode trunk
+
+Switch(config-if)#
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up
+
+	
+Switch(config-if)#switchport trunk allowed vlan 50,60
+Switch(config-if)#no shutdown
+Switch(config-if)#exit
+
+
+# FA0/2
+
+
+Switch(config-if)#interface fastEthernet 0/2
+Switch(config-if)#switchpo
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 50,60,100
+Switch(config-if)#no shutdown
+Switch(config-if)#exit
+Switch(config)#
+Switch(config)#exit
+Switch#
+%SYS-5-CONFIG_I: Configured from console by console
+
+Switch#show vlan
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/2
+50   v50                              active    Fa0/4, Fa0/5, Fa0/6, Fa0/7
+                                                Fa0/8, Fa0/9, Fa0/10
+60   v60                              active    Fa0/11, Fa0/12, Fa0/13, Fa0/14
+                                                Fa0/15, Fa0/16, Fa0/17, Fa0/18
+                                                Fa0/19, Fa0/20, Fa0/21, Fa0/22
+                                                Fa0/23, Fa0/24
+100  v100                             active    Fa0/3
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active    
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1    enet  100001     1500  -      -      -        -    -        0      0
+50   enet  100050     1500  -      -      -        -    -        0      0
+60   enet  100060     1500  -      -      -        -    -        0      0
+100  enet  100100     1500  -      -      -        -    -        0      0
+ --More-- 
+%LINK-5-CHANGED: Interface FastEthernet0/2, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/2, changed state to up
+
+Switch#
+
+--------------------------------
+
+
+ROUTER
+
+
+Router(config)#interface fastEthernet 0/0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+Router(config)#interface fastEthernet 0/0.50
+Router(config-subif)#ip address 172.24.50.1 255.255.255.0
+Router(config-subif)#encap
+Router(config-subif)#encapsulation dot1q 50
+Router(config-subif)#exit
+
+
+Router(config)#interface fastEthernet 0/0.60
+Router(config-subif)#ip address 172.24.60.1 255.255.255.0
+Router(config-subif)#encapsulation dot1q 60
+Router(config-subif)#exit
+
+
+Router(config)#interface fastEthernet 0/0.100
+Router(config-subif)#ip address 172.24.100.1 255.255.255.0
+Router(config-subif)#encapsulation dot1q 100
+Router(config-subif)#exit
+Router(config)#
+
+
