@@ -1,0 +1,401 @@
+Aaron Andal
+UF3 M07 Redes VLAN
+
+---------
+TEORIA
+---------
+
+¿Qué es la MAC?
+--
+La MAC, (Media Access Control), es una dirección física del protocolo Ethernet.
+Identifica de forma única las NIC (Tarjetas de red). Las proporciona el fabricante. Tiene un valor de 48 bits.
+--
+
+¿Cómo se comunican los ordenadores?
+--
+En una misma red se comunican siempre a través de las MAC.
+La comunicación se realiza mediante el protoclo ARP. Que es un traductor de direcciones IP a MAC.
+--
+
+¿Que es el protocolo ARP?
+--
+El protocolo ARP (Address Resolution Protocol) es un protocolo de la capa de enlace de datos (Capa 2) que se encarga de averiguar o traducir aquellas MAC tengan relación con su correspondiente IP.
+--
+
+¿Cómo lo hace el protocolo ARP para descubrirlo?
+--
+El cliente envia un ARP Request a la dirección broadcast, esta ARP Request contiene la IP por la cuál pregunta. Contestará aquel dispositivo que contenga la IP y le devolverá su MAC mediante un ARP Reply.
+
+--
+
+¿Que es la TABLA ARP?
+--
+La tabla ARP, es una tabla caché, que tienen los dispositivos para agilizar el proceso de búsqueda de MAC - IP para no saturar la RED.
+--
+
+¿En el ARP Request como sabe que es suyo?
+--
+Cada dispositivo recibe la "trama", comprueba si el destino es suyo y si no es suyo, lo descarta y lo devuelve al medio hasta que conteste el adecuado.
+--
+
+¿Que es un HUB?
+--
+Un hub es un dispositivo que amplifica la señal eléctrica.
+Envia un mensaje de broadcast a todos los equipos conectados en todos los puertos aunque no vayan para ellos.
+Si se envian dos mensajes a la vez, se produce una colisión.
+
+El ancho de banda es compartido a la hora de enviar tramas.
+--
+
+¿Que soluciones hay para el HUB?
+--
+
+CSMA/CD - Permite compartir el medio, y no permite que se envien mensajes hasta que el medio esté disponible.
+
+Se pueden dar colisiones.
+
+No es óptimo para grandes redes ya que no sabemos cuanto puede tardar en transmitir la información.
+
+SWITCH - Segmenta el dominio de colisiones ya que en cada puerto controla la MAC a la cual está conectada.
+
+El ancho de banda es total en cada puerto.
+
+--
+
+¿Que son los dominios de colisión?
+--
+El dominio de colisión es un segmento físico de una red entre dispositivos donde las tramas pueden colisionar o interferir con otros.
+
+Los dominios de colisiones son las conexiones entre cada dispositivo de la red o mediante un HUB.
+
+Tanto un router conectado a un switch, segmentan los dominios de colisión. Cada uno de los dispositivos conectados entre ellos es un dominio ed colisión.
+--
+
+¿Que son los dominios de broadcast - difusión?
+--
+*
+Un domini de broadcast o de difusió és una area lógica d'una LAN que la conformen diversos dispositius que reben "trames de broadcast" d'un host. Es poden segmentar mitjançant routers o switchos amb la creació de VLANS.
+*
+
+Un altre definició és que es un grup de dominis de col·lisió connectats per 2 dispositius de capa 2. El router i el switch. 
+
+
+Un domini de broadcast o de difusió es una área lógica d'una LAN que la conformen diversos dispositius que reben "trames de broadcast". Es poden segmentar mitjançant routers o switchos amb la creación de VLANS. 
+
+Un domini de broadcast es un grup de dominis de colisió connectats per 2 dispositius de capa 2 y capa 3. Un switch i un router.
+
+Un dominio de broadcast o difusión es un conjunto de todos los dispositivos que reciben tramas de broadcast que se originan de un host.
+
+Es una área lógica de una LAN que conforman todos los dispositivos de una red. Se pueden segmentar mediante routers o switches mediante la creación de vlans.
+--
+
+¿Que es la tabla MAC?
+--
+El switch mantiene una tabla MAC - Sigue le protocolo ARP.
+Las MAC obtenidas se guardan a la tabla MAC durante 300 segundos.
+Recibe una trama y anota el puerto y mac origen.
+Si no la tiene envia una trama a todos los puertos (Broadcast)
+El método sticky convierte en estáticas las MAC obtenidas.
+--
+
+¿Que son las VLAN?
+--
+Connecta xarxes diferents amb un switch.
+Segmenta els dominis de difusió, optimitzant el funcionament del switch.
+
+Virtual LAN, segmenta los dominios de difusión 
+
+
+--
+
+¿Cómo se asignan las VLAN?
+--
+
+Tiene 2 modos de asignación a un PUERTO
+
+ACCESS (ENLACE NORMAL - CADA VLAN POR CADA CABLE FÍSICO EN EL MEDIO)
+
+> enable
+
+# conf ter
+
+(config)# vlan 10
+
+(config-vlan)# name admin
+
+(config-vlan)# exit
+
+(config)# int range fa0/2-9
+
+(config-if-range)# switchport mode access
+
+
+			switch port access vlan 10
+			
+			no shutdown
+			
+			exit
+			
+(config)# vlan 20
+
+(config-vlan)# name comercials
+
+(config-vlan)# exit
+
+(config)# int range fa0/10-24
+
+(config-if-range)# switchport mode access
+
+
+			switch port access vlan 20
+			
+			no shutdown
+			
+			exit
+
+
+TRUNK (VARIAS VLAN - 2 O MÁS VLAN PASAN 1 CABLEADO FÍSICO EN EL MEDIO)
+
+- SOLAMENTE SI HAY 1 CABLE ENTRE SWITCH A SWITCH O SWITCH A ROUTER.
+
+interface fa0/1
+
+switchport mode trunk
+
+switchport trunk allowed vlan 10,20,50...
+
+no shutdown
+
+exit
+
+----
+
+802.1Q (DOT1Q) - ETIQUETA la TRAMA DE ETHERNET - CONTIENE LA INFO DE LA VLAN ORIGEN.
+
+- ES NECESARIOS EN LOS ROUTERS SUBIF SI HAY MÁS DE 2 VLANS
+
+SUB-IF
+
+
+
+--------
+
+CADA PUERTO ES UNA VLAN.
+
+----
+
+--
+
+¿COMO SE CONFIGURA EL ROUTER PARA QUE PASEN 2 VLAN?
+--
+
+> enable
+# conf ter
+
+# interface fa0/0
+
+	no shutdown
+	
+	exit
+	
+# interface fa0/0.50 <-- numero de VLAN
+
+	ip address x.x.x.x MAC
+	
+	encapsulation dot1q 50 <--- vlan
+	
+	exit
+
+Router(config)#interface fastEthernet 0/0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+
+Router(config)#interface fastEthernet 0/0.50
+Router(config-subif)#ip address 172.24.50.1 255.255.255.0
+Router(config-subif)#encap
+Router(config-subif)#encapsulation dot1q 50 <-- AQUI VA LA VAN
+Router(config-subif)#exit
+
+
+
+
+--
+
+¿VLAN NATIVA?
+--
+A cada enlace troncal, podemos escoger una vlan nativa.
+Por defecto las vlans nativas son la 1, si un puerto trunk recibe una traba sin TAG - SE CONSIDERA VLAN NATIVA.
+
+QUE PASA SI UN ENLACE TRONCAL RECIBE UNA TRABA SIN TAG VLAN? - LO REENVIARA A LOS PUERTOS ASOCIADOS A LA VLAN POR DEFECTO.
+
+LOS PUERTOS EN MODO ACCESS A UNA VLAN NATIVA NO AÑADEN TAG.
+
+VLAN NATIVA = 1 , SI RECIBEN TRAMAS SIN TAG SE CONSIDERA VLAN NATIVA.
+
+SÓLO REENVIARÁPOR LOS PUERTOS ASOCIADOS A LA VLAN POR DEFECTO.
+--
+
+¿ENRUTAMIENTO ROUTER-ON-A-STICK?
+--
+Una interficie por todas las VLAN
+PORT DEL SWITCH EN MODO TRONCAL
+
+- CREACIÓN DE SUBINTERIFCIES PARA CADA RED
+
+	INT FA0/0.10
+	
+	ENCAPSULATION DOT1Q 10 # ID INTERFICIE
+	
+	IP ADDRESS IP MAC
+	
+	
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+¿?
+--
+
+--
+
+
+---------
+PRACTICA
+---------
+
+- NOTAS IMPORTANTES A TENER EN CUENTA!!!!
+
+* Calcular bien cada VLAN y su RANGO
+
+* Cada switch tiene 24 dispositivos
+
+* Ruta por defecto 0.0.0.0 /0 fa0/1 -- Router a SWITCH puerto por la que sale. Cualquiera.
+
+* ACCESS 1 puerto por cada VLAN
+
+* TRUNK 1 puerto y VARIAS VLAN (+ de 2)
+
+* EN LOS ROUTER SE NECESITA ENCAPSULACIÓN DOT1Q SI HAY MÁS DE 2 VLANS QUE PASAN POR EL ÚNICO MÉDIO - NECESARIO HACER SUB INTERFICIE FA0/0.10 - FA0/0.20 - FA0/0.100 --- ENCAPSULATION DOT1Q 10 - 20 - 100 NO SHUTDOWN - HAY QUE ABRIR LA INTERFICIE POR DEFECTO OK
+
+* Los enlaces TRONCALES se conectan 2 DISPOSITIVOS INTERMEDIARIOS - SWITCH - SWITCH O SWITCH A ROUTER (switch a switch se puede ACCESS pero necesitas 1 cable x vlan, sino troncal 1 cable y varias vlan pasan).
+
+* vlan nativa - switchport trunk nativa vlan 1 - si pun puerto trunk recibe una traba sin tag - se considera VLAN NATIVA.
+
+-
+
+* Agrupar las VLAN con el rango de puertos del switch a configurar
+
+* Configurar los 2 switches con los dispositivos y rangos que pertenezcan a la vlan y que estén conectadas al switch.
+
+* cada segmento físico donde hay dispositivos conectados entre ellos es un dominio de colisión o mediante HUB.
+
+* un grupo de dispositivos conectados que se envían tramas ethernet es un dominio de difusión.
+
+* un 
+
+* 
+
+* 
+
+* trunk mode - sw - sw / sw - router
+
+
+
+Un domini de broadcast o de difusió es una área lógica d'una LAN que la conformen diversos dispositius que reben "trames de broadcast" d'un host. Es poden segmentar mitjançant routers o switchos amb la creación de VLANS. 
+
+Un domini de broadcast es un grup de dominis de colisió connectats per 2 dispositius de capa 2 y capa 3. Un switch i un router.
+
+Un dominio de broadcast o difusión es un conjunto de todos los dispositivos que reciben tramas de broadcast que se originan de un host.
+
+
+-------- 
+
+
+SIMULACIÓN EXAMEN
+
+Tenemos 2 redes que están conectadas por WAN - Barcelona y MADRID
+
+Barcelona tiene 2 VLANS - controladas por 1 switch cada uno
+
+Cada red de las VLANS tiene 90 disp --> En ese switch hay 4 switches - 24 x 4 - 96 dispositivos podemos conectar
+
+- El switch que conecta con el router se configuran las 2 VLAN y está en modo TRUNK
+
+	- EL RESTO DE SWITCH DENTRO DE UNA VLAN NO HACE FALTA YA QUE ESTÁN DENTRO DE LA MISMA VLAN.
+	
+- SWITCH 13 EN LA FA0/2 - SE TIENE QUE ASOCIAR CON LA VLAN 10
+
+	- QUIERE DECIR EN EL SWITCH 13 EN EL PUERTO QUE CONECTA LA VLAN 10 - SERÁ PARA ESE. LA FA0/2.
+	
+	
+	
+- LA FA0/3 SERÁ PARA LA VLAN20.
+
+- EL ROUTER TIENE 2 SUB INTERFICIES 0.10 Y 0.20 ENCAPSULADOS CON CADA VLAN. Y SUS IPS.
+
+- 
+
+
