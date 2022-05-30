@@ -362,7 +362,7 @@ PRACTICA
 
 * trunk mode - sw - sw / sw - router
 
-
+Un domini de broadcast o de difusió son tots els dispositius que conformen una mateixa LAN o bé una area lógica d'una LAN que reben trames de broadcast d'un host. Es poden segmentar mitjançant routers o switchos amb la creació de VLANS. 
 
 Un domini de broadcast o de difusió es una área lógica d'una LAN que la conformen diversos dispositius que reben "trames de broadcast" d'un host. Es poden segmentar mitjançant routers o switchos amb la creación de VLANS. 
 
